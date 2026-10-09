@@ -1,0 +1,68 @@
+# Blueprint do Render: Dashboard > New > Blueprint > escolha este repositório.
+# Os valores marcados com "sync: false" são segredos: o Render pede no painel (copie do seu .env).
+services:
+  # Bot: fica ligado o tempo todo e posta no canal do Telegram.
+  # Precisa de plano pago (worker + disco): a fila, a sessão do Mercado Livre e o log ficam em /app/data.
+  - type: worker
+    name: achadinhos-vic-bot
+    runtime: docker
+    dockerfilePath: ./ml-afiliados/Dockerfile
+    dockerContext: ./ml-afiliados
+    plan: starter
+    region: virginia
+    buildFilter:
+      paths:
+        - ml-afiliados/**
+    disk:
+      name: dados
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: SENDER
+        value: telegram
+      - key: ML_PERFIL_DIR
+        value: /app/data/perfil-ml
+      - key: TZ
+        value: America/Sao_Paulo
+      - key: CRON_COLETA
+        value: "0 7,12,17 * * *"
+      - key: CRON_ENVIO
+        value: "*/20 8-21 * * *"
+      - key: CRON_LIMPEZA
+        value: "0 0 * * *"
+      - key: CRON_RESUMO
+        value: "0 22 * * *"
+      - key: SIMULAR_DIGITANDO
+        value: "true"
+      - key: LLM_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: LLM_MODEL
+        value: llama-3.3-70b-versatile
+      - key: AMAZON_MARKETPLACE
+        value: www.amazon.com.br
+      - key: ML_AFFILIATE_TAG
+        sync: false
+      - key: ML_COOKIES
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: AVISOS_DESTINO_TELEGRAM
+        sync: false
+      - key: AMAZON_PARTNER_TAG
+        sync: false
+      - key: AMAZON_CREDENTIAL_ID
+        sync: false
+      - key: AMAZON_CREDENTIAL_SECRET
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+
+  # Site: página de entrada do grupo (grátis).
+  - type: web
+    name: achadinhos-vic
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: ./Vic Site
+    buildFilter:
+      paths:
+        - Vic Site/**
