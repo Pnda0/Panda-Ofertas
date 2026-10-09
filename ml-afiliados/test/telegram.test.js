@@ -1,0 +1,58 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { TelegramSender, paraHTML } from '../src/telegram.js';
+import { montarLegenda } from '../src/caption.js';
+
+test('paraHTML: negrito e riscado do WhatsApp viram HTML do Telegram, sem quebrar links', () => {
+  const p = { nome: 'Fone JBL <Tune> & Cia', precoAtual: 199.9, precoOriginal: 399.9, descontoPct: 50, linkAfiliado: 'https://meli.la/a_b*c' };
+  const html = paraHTML(montarLegenda(p, { titulo: 'BUGOU O PREÇO' }));
+  assert.match(html, /^<b>BUGOU O PREÇO<\/b>/);
+  assert.match(html, /<s>De R\$ 399,90<\/s>/);
+  assert.match(html, /🔥 <b>Por R\$ 199,90<\/b> \(50% OFF\)/);
+  assert.match(html, /Fone JBL &lt;Tune&gt; &amp; Cia/);
+  assert.match(html, /https:\/\/meli\.la\/a_b\*c/);
+});
+
+function tgFalso(respostas) {
+  const chamadas = [];
+  const fetchImpl = async (url, opts) => {
+    const metodo = url.split('/').pop();
+    const body = JSON.parse(opts.body);
+    chamadas.push({ metodo, body, url });
+    const r = respostas(metodo, body, chamadas.length);
+    return { status: r.status || 200, json: async () => r.body };
+  };
+  return { tg: new TelegramSender({ token: '123:ABC', fetchImpl }), chamadas };
+}
+
+test('TelegramSender: manda foto com legenda em HTML; se a foto falhar, manda o texto', async () => {
+  const { tg, chamadas } = tgFalso((m) => (m === 'sendPhoto' ? { status: 400, body: { ok: false, description: 'wrong file' } } : { body: { ok: true, result: {} } }));
+  const r = await tg.sendImage('-100123', 'https://img/x.jpg', '*OFERTA*\nhttps://meli.la/x');
+  assert.deepEqual(r, { comImagem: false });
+  assert.deepEqual(chamadas.map((c) => c.metodo), ['sendPhoto', 'sendMessage']);
+  assert.equal(chamadas[0].body.caption, '<b>OFERTA</b>\nhttps://meli.la/x');
+  assert.equal(chamadas[0].body.parse_mode, 'HTML');
+  assert.equal(chamadas[1].body.chat_id, '-100123');
+  assert.match(chamadas[0].url, /api\.telegram\.org\/bot123:ABC\/sendPhoto$/);
+});
+
+test('TelegramSender: lista os chats vistos e espera quando o Telegram pede (429)', async () => {
+  let n = 0;
+  const { tg } = tgFalso((m) => {
+    if (m === 'getUpdates')
+      return { body: { ok: true, result: [
+        { channel_post: { chat: { id: -1001, title: 'Panda Ofertas (teste)', type: 'channel' } } },
+        { message: { chat: { id: 555, first_name: 'Alan', type: 'private' } } },
+        { channel_post: { chat: { id: -1001, title: 'Panda Ofertas (teste)', type: 'channel' } } },
+      ] } };
+    n++;
+    return n === 1 ? { status: 429, body: { ok: false, parameters: { retry_after: 0 } } } : { body: { ok: true, result: {} } };
+  });
+  assert.deepEqual(await tg.listGroups(), [
+    { nome: 'Panda Ofertas (teste)', jid: '-1001', tipo: 'channel' },
+    { nome: 'Alan', jid: '555', tipo: 'private' },
+  ]);
+  await tg.sendText('-1001', 'oi');
+  assert.equal(n, 2, 'tentou de novo depois do 429');
+  await assert.rejects(new TelegramSender({ token: '' }).init(), /TELEGRAM_BOT_TOKEN/);
+});

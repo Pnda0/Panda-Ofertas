@@ -1,0 +1,35 @@
+{
+  "name": "ml-afiliados",
+  "version": "1.2.0",
+  "description": "Bot de ofertas do Mercado Livre para grupos de WhatsApp: coleta ofertas, gera links de afiliado e envia com legenda.",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "configurar": "node src/setup.js",
+    "login-ml": "node src/cli.js login-ml",
+    "fontes": "node src/cli.js fontes",
+    "testar-espelho": "node src/cli.js testar-espelho",
+    "coletar": "node src/cli.js coletar",
+    "links": "node src/cli.js links",
+    "enviar": "node src/cli.js enviar",
+    "status": "node src/cli.js status",
+    "grupos": "node src/cli.js grupos",
+    "testar-afiliado": "node src/cli.js testar-afiliado",
+    "limpar": "node src/cli.js limpar",
+    "test": "node --test",
+    "resumo": "node src/cli.js resumo",
+    "testar-amazon": "node src/cli.js testar-amazon",
+    "telegram": "node src/cli.js telegram"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.34.7",
+    "puppeteer": "24.38.0"
+  }
+}

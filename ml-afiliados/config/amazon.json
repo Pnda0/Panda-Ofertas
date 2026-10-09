@@ -1,0 +1,104 @@
+{
+  "_comentario": "AMAZON (API oficial Creators API). Cada busca = 1 chamada por página. 'keywords' = o que procurar; 'searchIndex' = departamento (All, Electronics, Computers, HomeAndKitchen, Beauty, Toys, VideoGames, ToolsAndHomeImprovement, HealthPersonalCare, PetSupplies, SportsAndOutdoors, Fashion...). 'minSavingPercent' = desconto mínimo pedido à Amazon. As credenciais ficam no .env (AMAZON_CREDENTIAL_ID, AMAZON_CREDENTIAL_SECRET, AMAZON_PARTNER_TAG). Depois de mexer aqui, reinicie o bot.",
+  "ativo": true,
+  "grupo": "Geral",
+  "minSavingPercent": 20,
+  "buscas": [
+    {
+      "nome": "Fones e caixas de som",
+      "keywords": "fone bluetooth",
+      "searchIndex": "Electronics",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Smartwatch",
+      "keywords": "smartwatch",
+      "searchIndex": "Electronics",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Dispositivos Amazon",
+      "keywords": "echo dot",
+      "searchIndex": "Electronics",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Air fryer",
+      "keywords": "air fryer",
+      "searchIndex": "HomeAndKitchen",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Cozinha",
+      "keywords": "panela antiaderente",
+      "searchIndex": "HomeAndKitchen",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Informática",
+      "keywords": "ssd",
+      "searchIndex": "Computers",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Games",
+      "keywords": "controle",
+      "searchIndex": "VideoGames",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Perfumes",
+      "keywords": "perfume",
+      "searchIndex": "Beauty",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Ferramentas",
+      "keywords": "parafusadeira",
+      "searchIndex": "ToolsAndHomeImprovement",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Brinquedos",
+      "keywords": "lego",
+      "searchIndex": "Toys",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Suplementos",
+      "keywords": "whey protein",
+      "searchIndex": "HealthPersonalCare",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    },
+    {
+      "nome": "Pet",
+      "keywords": "ração",
+      "searchIndex": "PetSupplies",
+      "itemCount": 10,
+      "paginas": 1,
+      "ativo": true
+    }
+  ]
+}

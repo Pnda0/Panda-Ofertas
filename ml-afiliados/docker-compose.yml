@@ -1,0 +1,33 @@
+# Uso:
+#   docker compose up -d --build     -> liga o bot (fica rodando e volta sozinho se o PC reiniciar)
+#   docker compose logs -f           -> acompanha (o QR code do WhatsApp aparece aqui na 1ª vez)
+#   docker compose down              -> desliga
+#   docker compose run --rm bot npm run configurar   -> assistente (escolher grupo, envio de teste)
+services:
+  bot:
+    build: .
+    image: ml-afiliados
+    container_name: ml-afiliados
+    hostname: ml-afiliados
+    restart: unless-stopped
+    init: true
+    tty: true
+    stdin_open: true
+    shm_size: "1gb"
+    environment:
+      TZ: America/Sao_Paulo
+      CHROME_PATH: /usr/bin/chromium
+      WHATSAPP_JANELA: "false"
+      ML_PERFIL_DIR: /app/perfil
+    volumes:
+      - ./.env:/app/.env                # etiqueta, SENDER, agenda
+      - ./config:/app/config            # categorias e grupos
+      - ./data:/app/data                # cookies do ML, fila (db.json) e bot.log
+      - wwebjs_auth:/app/.wwebjs_auth   # sessão do WhatsApp (volume do Docker, não pasta do Windows)
+      - wwebjs_cache:/app/.wwebjs_cache
+      - perfil:/app/perfil
+
+volumes:
+  wwebjs_auth:
+  wwebjs_cache:
+  perfil:

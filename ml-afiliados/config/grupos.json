@@ -1,0 +1,36 @@
+{
+  "_comentario": "Cada grupo recebe as ofertas das categorias com o mesmo nome em 'grupo' (config/categorias.json). 'nicho' liga o grupo a uma lista de palavras de config/nichos.json. Hoje o grupo 'Ofertas' do WhatsApp recebe só FITNESS (grupo 'Fitness' ativo, 'Geral' desligado).",
+  "filtrosPadrao": {
+    "descontoMinimo": 20,
+    "precoMinimo": 15,
+    "precoMaximo": 5000,
+    "notaMinima": 4,
+    "palavrasBloqueadas": [
+      "usado",
+      "recondicionado",
+      "refil"
+    ],
+    "diasSemRepetir": 5
+  },
+  "grupos": [
+    {
+      "nome": "Geral",
+      "jid": "120363409515576601@g.us",
+      "ativo": true,
+      "mensagemAdicional": "",
+      "filtros": {},
+      "telegram": ""
+    },
+    {
+      "nome": "Fitness",
+      "jid": "120363409515576601@g.us",
+      "ativo": false,
+      "mensagemAdicional": "",
+      "filtros": {
+        "descontoMinimo": 15
+      },
+      "nicho": "fitness",
+      "telegram": ""
+    }
+  ]
+}

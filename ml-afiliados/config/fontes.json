@@ -1,0 +1,9 @@
+{
+  "_comentario": "ESPELHO: grupos de WhatsApp de onde o bot aproveita as ofertas do Mercado Livre e da Amazon. Em 'fontes', ponha o nome do grupo como aparece no WhatsApp (pode ser só uma parte, se for único). 'destino' = qual grupo seu recebe (nome em config/grupos.json). Depois de mexer aqui, reinicie o bot.",
+  "ativo": true,
+  "destinoPadrao": "Geral",
+  "intervaloSegundos": 60,
+  "janelaMinutos": 20,
+  "maxPorHora": 15,
+  "fontes": []
+}

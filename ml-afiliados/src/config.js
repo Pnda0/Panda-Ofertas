@@ -1,0 +1,92 @@
+import 'dotenv/config';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+export const DATA_DIR = path.join(ROOT, 'data');
+fs.mkdirSync(DATA_DIR, { recursive: true });
+
+const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
+
+export function loadCategorias() {
+  return readJson('config/categorias.json');
+}
+
+/** Nichos (config/nichos.json): listas de palavras e títulos por tema. Sem arquivo = sem nichos. */
+export function loadNichos() {
+  try {
+    return readJson('config/nichos.json');
+  } catch {
+    return {};
+  }
+}
+
+export function loadGrupos() {
+  const cfg = readJson('config/grupos.json');
+  const nichos = loadNichos();
+  return cfg.grupos.map((g) => {
+    const nicho = (g.nicho && nichos[g.nicho]) || null;
+    const filtros = { ...cfg.filtrosPadrao, ...(g.filtros || {}) };
+    if (nicho) {
+      filtros.palavrasObrigatorias = [
+        ...(nicho.obrigatorias || []),
+        ...(nicho.extras || []),
+        ...(filtros.palavrasObrigatorias || []),
+      ];
+      filtros.palavrasBloqueadas = [...(filtros.palavrasBloqueadas || []), ...(nicho.bloqueadas || [])];
+    }
+    return {
+      ...g,
+      // No Telegram o destino é o chat id do campo "telegram"; o JID do WhatsApp fica guardado em jidWhats.
+      jidWhats: g.jid,
+      jid: settings.sender === 'telegram' ? g.telegram || 'COLE_AQUI_O_CHAT_ID_DO_TELEGRAM' : g.jid,
+      // O texto de exemplo ("SEU_CONVITE") nunca vai para o grupo.
+      mensagemAdicional: /SEU_CONVITE/.test(g.mensagemAdicional || '') ? '' : g.mensagemAdicional || '',
+      filtros,
+      titulos: g.titulos || nicho?.titulos || null,
+      tema: g.tema || nicho?.tema || null,
+      // Só produtos do tema (nicho.obrigatorias) usam os títulos do tema; os "extras" usam os gerais.
+      termosTema: nicho?.extras?.length ? nicho.obrigatorias || [] : null,
+    };
+  });
+}
+
+/** Grupos-fonte do espelho (config/fontes.json). Sem arquivo = espelho desligado. */
+export function loadFontes() {
+  try {
+    const cfg = readJson('config/fontes.json');
+    return { ativo: cfg.ativo !== false, fontes: (cfg.fontes || []).filter((f) => f && (f.nome || f.jid)), cfg };
+  } catch {
+    return { ativo: false, fontes: [], cfg: {} };
+  }
+}
+
+const env = process.env;
+const bool = (v, def) => (v === undefined || v === '' ? def : /^(1|true|sim|yes)$/i.test(v));
+
+export const settings = {
+  affiliateTag: env.ML_AFFILIATE_TAG?.trim() || '',
+  cookiesEnv: env.ML_COOKIES?.trim() || '',
+  csrfToken: env.ML_CSRF_TOKEN?.trim() || '',
+  sender: (env.SENDER || 'console').toLowerCase(),
+  evolution: { url: env.EVOLUTION_URL, instance: env.EVOLUTION_INSTANCE, apikey: env.EVOLUTION_APIKEY },
+  wuzapi: { url: env.WUZAPI_URL, token: env.WUZAPI_TOKEN },
+  simularDigitando: bool(env.SIMULAR_DIGITANDO, true),
+  whatsappJanela: bool(env.WHATSAPP_JANELA, true),
+  enviarSemImagem: bool(env.ENVIAR_SEM_IMAGEM, true),
+  llm: { baseUrl: env.LLM_BASE_URL, apiKey: env.LLM_API_KEY, model: env.LLM_MODEL },
+  cron: {
+    coleta: env.CRON_COLETA || '0 7,12,17 * * *',
+    envio: env.CRON_ENVIO || '*/8 8-21 * * *',
+    limpeza: env.CRON_LIMPEZA || '0 0 * * *',
+  },
+  tz: env.TZ || 'America/Sao_Paulo',
+  // Alertas e resumo diário: nome de um grupo do WhatsApp (ex.: "Avisos do bot") ou número com DDD (ex.: 5579999998888).
+  avisos: {
+    destino: (env.SENDER || '').toLowerCase() === 'telegram' ? env.AVISOS_DESTINO_TELEGRAM?.trim() || '' : env.AVISOS_DESTINO?.trim() || '',
+    resumoCron: env.CRON_RESUMO || '0 22 * * *',
+  },
+  userAgent:
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',
+};
