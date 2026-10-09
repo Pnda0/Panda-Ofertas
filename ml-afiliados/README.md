@@ -139,7 +139,7 @@ A Amazon só libera a API para contas com vendas qualificadas recentes; sem isso
 ## 3.10 Testar pelo Telegram (sem WhatsApp)
 
 1. No Telegram, fale com **@BotFather** > `/newbot` > dê nome e usuário (terminando em `bot`). Ele devolve o **token**.
-2. Crie um **canal** (ex.: "Panda Ofertas (teste)") e adicione o bot como **administrador** com permissão de postar. Poste qualquer coisa no canal e mande `/start` no privado do bot.
+2. Crie um **canal** (ex.: "Achadinhos da Vic (teste)") e adicione o bot como **administrador** com permissão de postar. Poste qualquer coisa no canal e mande `/start` no privado do bot.
 3. No `.env`: `SENDER=telegram` e `TELEGRAM_BOT_TOKEN=<token>`.
 4. `npm run telegram` mostra os chats que o bot viu, com o **chat id** (canal começa com `-100`). Ponha o do canal em `config/grupos.json` → `"telegram": "-100..."` e o da sua conversa privada em `AVISOS_DESTINO_TELEGRAM`.
 5. Ligue o bot normalmente. Para voltar ao WhatsApp, é só `SENDER=wwebjs` (o JID do WhatsApp continua guardado em `jid`).
